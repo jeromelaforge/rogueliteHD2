@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Helldivers 2: Roguelite Mod</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #1e1e2e;
+      color: white;
+      padding: 20px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button#btnReset {
+      background-color: #ff4d4d;
+    }
+    button#btnReset:hover {
+      background-color: #cc0000;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background-color: #333;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 5px;
+      width: 300px;
+    }
+    .banner {
+      background-color: #282c34;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .banner img {
+      max-width: 150px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <img src="https://upload.wikimedia.org/wikipedia/fr/a/a7/Helldivers_II_Logo.png" alt="Helldivers Logo">
+  </div>
+
+  <h1>Helldivers 2: Roguelite Mod</h1>
+  <button id="btnStratageme" onclick="ajouterStratageme()">New Stratagem</button>
+  <button id="btnReset" onclick="resetStratagems()">Reset Stratagem</button>
+  <ul id="stratagemeListe"></ul>
+
+  <script>
+    // List of available stratagems
+    const stratagemes = [
+      "Eagle Airstrike",
+      "Eagle Strafing Run",
+      "Eagle Cluster Bomb",
+      "Eagle Napalm Airstrike",
+      "Eagle Smoke Strike",
+      "Eagle 500kg Bomb",
+      "Eagle 110mm Rocket Pods",
+      "Orbital Gatling Barrage",
+      "Orbital 120mm HE Barrage",
+      "Orbital 380mm HE Barrage",
+      "Orbital Walking Barrage",
+      "Orbital Napalm Barrage",
+      "Orbital Airburst Strike",
+      "Orbital Laser",
+      "Orbital Railcannon Strike",
+      "Orbital Precision Strike",
+      "Orbital Gas Strike",
+      "Orbital EMS Strike",
+      "Obrital Smoke Strike",
+      "Machine Gun Sentry",
+      "Gatling Sentry",
+      "Autocannon Sentry",
+      "Rocket Sentry",
+      "Flame Sentry",
+      "Mortar Sentry",
+      "EMS Mortar Sentry",
+      "Anti-Tank Mines",
+      "Incendiary Mines",
+      "Anti-Personnel Mines",
+      "Tesla Tower",
+      "Shield Generator Relay",
+      "HMG Emplacement",
+      "Anti-Tank Emplacement"
+    ];
+
+    // Mutable copy of remaining stratagems
+    let stratagemesRestants = [...stratagemes];
+
+    // Function to add a random stratagem
+    function ajouterStratageme() {
+      if (stratagemesRestants.length === 0) {
+        alert("All stratagems have been drawn!");
+        return;
+      }
+
+      const index = Math.floor(Math.random() * stratagemesRestants.length);
+      const stratageme = stratagemesRestants.splice(index, 1)[0];
+
+      const liste = document.getElementById("stratagemeListe");
+      const nouvelElement = document.createElement("li");
+      nouvelElement.textContent = stratageme;
+      liste.appendChild(nouvelElement);
+
+      // Disable button if no more stratagems
+      if (stratagemesRestants.length === 0) {
+        document.getElementById("btnStratageme").disabled = true;
+        document.getElementById("btnStratageme").textContent = "All stratagems drawn";
+      }
+    }
+
+    // Function to reset the stratagem list
+    function resetStratagems() {
+      stratagemesRestants = [...stratagemes];
+      document.getElementById("stratagemeListe").innerHTML = "";
+      const btnStratageme = document.getElementById("btnStratageme");
+      btnStratageme.disabled = false;
+      btnStratageme.textContent = "New Stratagem";
+    }
+  </script>
+</body>
+</html>
