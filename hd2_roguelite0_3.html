@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Helldivers 2: Roguelite Mod</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #1e1e2e;
+      color: white;
+      padding: 20px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button#btnReset {
+      background-color: #ff4d4d;
+    }
+    button#btnReset:hover {
+      background-color: #cc0000;
+    }
+    button#btnUndo {
+      background-color: #ffa500;
+      padding: 5px 15px;
+      border-radius: 50%;
+      font-weight: bold;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background-color: #333;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 5px;
+      width: 300px;
+    }
+    .banner {
+      background-color: #282c34;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .banner img {
+      max-width: 150px;
+      height: auto;
+    }
+    .button-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rules-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #6c757d;
+    }
+    .rules-button:hover {
+      background-color: #5a6268;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    .modal-content {
+      background-color: #282c34;
+      color: white;
+      margin: 15% auto;
+      padding: 20px;
+      border: none;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 10px;
+    }
+    .close {
+      color: white;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: #aaa;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      button {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+      }
+      li {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <img src="https://upload.wikimedia.org/wikipedia/fr/a/a7/Helldivers_II_Logo.png" alt="Helldivers Logo">
+  </div>
+
+  <button class="rules-button" onclick="openRulesModal()">Rules</button>
+
+  <h1>Helldivers 2: Roguelite Mod</h1>
+  <div class="button-group">
+    <button id="btnUndo" onclick="removeLastStratageme()">&#x21A9;</button>
+    <button id="btnStratageme" onclick="ajouterStratageme()">New Stratagem</button>
+  </div>
+  <button id="btnReset" onclick="resetStratagems()">Reset Stratagem</button>
+  <ul id="stratagemeListe"></ul>
+
+  <div id="rulesModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeRulesModal()">&times;</span>
+      <h2>Game Rules</h2>
+      <p>First, you must have unlocked all stratagems.</p>
+      <p>Start a campaign at difficulty level 1. You are not allowed to use any stratagems (you will have to select 4, but you must not use them).</p>
+      <p>Once finished, click on "New Stratagem" and start a campaign at difficulty level 2. You will only be able to use the chosen stratagem.</p>
+      <p>Each time you complete a mission, you earn a new stratagem.</p>
+      <p>When you have more than 4 stratagems, you can choose whichever ones you want from the list.</p>
+      <p>The objective is to complete all campaigns at all difficulty levels.</p>
+      <p>Most importantly, have fun!</p>
+    </div>
+  </div>
+
+  <script>
+    // List of available stratagems
+    const stratagemes = [
+      "Eagle Airstrike",
+      "Eagle Strafing Run",
+      "Eagle Cluster Bomb",
+      "Eagle Napalm Airstrike",
+      "Eagle Smoke Strike",
+      "Eagle 500kg Bomb",
+      "Eagle 110mm Rocket Pods",
+      "Orbital Gatling Barrage",
+      "Orbital 120mm HE Barrage",
+      "Orbital 380mm HE Barrage",
+      "Orbital Walking Barrage",
+      "Orbital Napalm Barrage",
+      "Orbital Airburst Strike",
+      "Orbital Laser",
+      "Orbital Railcannon Strike",
+      "Orbital Precision Strike",
+      "Orbital Gas Strike",
+      "Orbital EMS Strike",
+      "Obrital Smoke Strike",
+      "Machine Gun Sentry",
+      "Gatling Sentry",
+      "Autocannon Sentry",
+      "Rocket Sentry",
+      "Flame Sentry",
+      "Mortar Sentry",
+      "EMS Mortar Sentry",
+      "Anti-Tank Mines",
+      "Incendiary Mines",
+      "Anti-Personnel Mines",
+      "Tesla Tower",
+      "Shield Generator Relay",
+      "HMG Emplacement",
+      "Anti-Tank Emplacement"
+    ];
+
+    // Mutable copy of remaining stratagems
+    let stratagemesRestants = [...stratagemes];
+
+    // Function to add a random stratagem
+    function ajouterStratageme() {
+      if (stratagemesRestants.length === 0) {
+        alert("All stratagems have been drawn!");
+        return;
+      }
+
+      const index = Math.floor(Math.random() * stratagemesRestants.length);
+      const stratageme = stratagemesRestants.splice(index, 1)[0];
+
+      const liste = document.getElementById("stratagemeListe");
+      const nouvelElement = document.createElement("li");
+      nouvelElement.textContent = stratageme;
+      liste.appendChild(nouvelElement);
+
+      // Disable button if no more stratagems
+      if (stratagemesRestants.length === 0) {
+        document.getElementById("btnStratageme").disabled = true;
+        document.getElementById("btnStratageme").textContent = "All stratagems drawn";
+      }
+    }
+
+    // Function to reset the stratagem list
+    function resetStratagems() {
+      stratagemesRestants = [...stratagemes];
+      document.getElementById("stratagemeListe").innerHTML = "";
+      const btnStratageme = document.getElementById("btnStratageme");
+      btnStratageme.disabled = false;
+      btnStratageme.textContent = "New Stratagem";
+    }
+
+    // Function to remove the last stratagem from the list
+    function removeLastStratageme() {
+      const liste = document.getElementById("stratagemeListe");
+      if (liste.lastChild) {
+        const lastStratageme = liste.lastChild.textContent;
+        stratagemesRestants.push(lastStratageme);
+        liste.removeChild(liste.lastChild);
+        document.getElementById("btnStratageme").disabled = false;
+        document.getElementById("btnStratageme").textContent = "New Stratagem";
+      }
+    }
+
+    // Open Rules Modal
+    function openRulesModal() {
+      document.getElementById("rulesModal").style.display = "block";
+    }
+
+    // Close Rules Modal
+    function closeRulesModal() {
+      document.getElementById("rulesModal").style.display = "none";
+    }
+  </script>
+</body>
+</html>
