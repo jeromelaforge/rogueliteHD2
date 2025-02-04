@@ -113,6 +113,13 @@
       li {
         width: 90%;
       }
+      .button-group {
+        display: flex;
+        flex-direction: column;
+      }
+      #btnReset {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
@@ -127,8 +134,8 @@
   <div class="button-group">
     <button id="btnUndo" onclick="removeLastStratageme()">&#x21A9;</button>
     <button id="btnStratageme" onclick="ajouterStratageme()">New Stratagem</button>
+    <button id="btnReset" onclick="resetStratagems()">Reset Stratagem</button>
   </div>
-  <button id="btnReset" onclick="resetStratagems()">Reset Stratagem</button>
   <ul id="stratagemeListe"></ul>
 
   <div id="rulesModal" class="modal">
